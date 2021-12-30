@@ -1,0 +1,32 @@
+module drawGraph
+author 'Matthias Giger'
+version 1 0 
+depends TFT 
+description 'Draws a scaled graph on the Adafruit CLUE display
+'
+variables list 
+
+	spec ' ' 'drawGraph' 'drawGraph _ _ _ _ _ _ _' 'auto auto auto auto auto auto auto' '10' '10' '10' '10' '10' '10' '10'
+	spec 'r' 'scale value' 'scale value _ _ _ _ _' 'auto auto auto auto auto' '10' '10' '10' '10' '10'
+
+to drawGraph values labels height color min max timestr {
+  local 'labelList' ('[data:split]' labels ';')
+  '[tft:text]' timestr 0 (height - 15) (makeColor 180 180 180) 1 false
+  for i (size labelList) {
+    '[tft:line]' 0 ('scale value' (at i labelList) min max height 240) 210 ('scale value' (at i labelList) min max height 240) (makeColor 180 180 180)
+    '[tft:text]' (at i labelList) 215 (('scale value' (at i labelList) min max height 240) - 2) (makeColor 180 180 180) 1 false
+  }
+  for i (size list) {
+    '[tft:setPixel]' i ('scale value' (at i values) min max height 240) color
+  }
+}
+
+to 'scale value' value minin maxin minout maxout {
+  local 'diffin' 0
+  local 'diffout' 0
+  local 'factor' 0
+  diffin = (maxin - minin)
+  diffout = (maxout - minout)
+  return (240 - (((value * diffout) / diffin) - ((minin * diffout) / diffin)))
+}
+

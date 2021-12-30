@@ -1,0 +1,476 @@
+module 'digits'
+author 'Matthias Giger'
+version 1 2 
+description 'Library to display big digital numbers'
+variables x y dig_l numbers dig_g dig_r color 
+
+	spec ' ' '0' '0'
+	spec ' ' '1' '1'
+	spec ' ' '2' '2'
+	spec ' ' '3' '3'
+	spec ' ' '4' '4'
+	spec ' ' '5' '5'
+	spec ' ' '6' '6'
+	spec ' ' '7' '7'
+	spec ' ' '8' '8'
+	spec ' ' '9' '9'
+	spec ' ' 'h1' 'h1'
+	spec ' ' 'h2' 'h2'
+	spec ' ' 'h3' 'h3'
+	spec ' ' 'lvd' 'lvd'
+	spec ' ' 'lvt' 'lvt'
+	spec ' ' 'rvd' 'rvd'
+	spec ' ' 'rvt' 'rvt'
+	spec ' ' 'displayDigits' 'displayDigits _ _' 'auto auto' '10' '5'
+	spec ' ' 'empty' 'empty'
+	spec ' ' 'initDigits' 'initDigits _ _ _' 'auto auto auto' '20' '4' '2'
+	spec 'r' 'fillDigits' 'fillDigits _ _' 'auto auto' '10' '10'
+	spec ' ' 'space' 'space'
+
+to '0' {
+  h1
+  lvt
+  rvt
+  h3
+  lvd
+  rvd
+}
+
+to '1' {
+  rvt
+  rvd
+}
+
+to '2' {
+  h1
+  rvt
+  h2
+  lvd
+  h3
+}
+
+to '3' {
+  h1
+  rvt
+  h2
+  rvd
+  h3
+}
+
+to '4' {
+  lvt
+  rvt
+  h2
+  rvd
+}
+
+to '5' {
+  h1
+  lvt
+  h2
+  rvd
+  h3
+}
+
+to '6' {
+  h1
+  lvt
+  h2
+  lvd
+  rvd
+  h3
+}
+
+to '7' {
+  h1
+  rvt
+  rvd
+}
+
+to '8' {
+  h1
+  lvt
+  rvt
+  h2
+  lvd
+  rvd
+  h3
+}
+
+to '9' {
+  h1
+  lvt
+  rvt
+  h2
+  rvd
+  h3
+}
+
+to displayDigits digits length {
+  numbers = ('[data:split]' (fillDigits digits length) '')
+  for i (size numbers) {
+    if ((at i numbers) == (at 1 '1')) {
+      '1'
+    } ((at i numbers) == (at 1 '2')) {
+      '2'
+    } ((at i numbers) == (at 1 '3')) {
+      '3'
+    } ((at i numbers) == (at 1 '4')) {
+      '4'
+    } ((at i numbers) == (at 1 '5')) {
+      '5'
+    } ((at i numbers) == (at 1 '6')) {
+      '6'
+    } ((at i numbers) == (at 1 '7')) {
+      '7'
+    } ((at i numbers) == (at 1 '8')) {
+      '8'
+    } ((at i numbers) == (at 1 '9')) {
+      '9'
+    } ((at i numbers) == (at 1 '0')) {
+      '0'
+    } else {
+    }
+    space
+  }
+}
+
+to empty {
+  x += (l + 0)
+}
+
+to fillDigits digits length {
+  local 'spacer' ''
+  if (length > (size ('[data:join]' digits ''))) {
+    for i (length - (size ('[data:join]' digits ''))) {
+      spacer = ('[data:join]' ' ' spacer)
+    }
+  }
+  return ('[data:join]' spacer digits)
+}
+
+to h1 {
+  '[tft:roundedRect]' (x + dig_g) y dig_l dig_g dig_r color
+}
+
+to h2 {
+  '[tft:roundedRect]' (x + dig_g) ((y + dig_l) + dig_g) dig_l dig_g dig_r color
+}
+
+to h3 {
+  '[tft:roundedRect]' (x + dig_g) (y + ((dig_l + dig_g) * 2)) dig_l dig_g dig_r color
+}
+
+to initDigits size stroke round {
+  dig_l = size
+  dig_g = stroke
+  dig_r = round
+}
+
+to lvd {
+  '[tft:roundedRect]' x ((y + dig_l) + (dig_g * 2)) dig_g dig_l dig_r color
+}
+
+to lvt {
+  '[tft:roundedRect]' x (y + dig_g) dig_g dig_l dig_r color
+}
+
+to rvd {
+  '[tft:roundedRect]' ((x + dig_l) + dig_g) ((y + dig_l) + (dig_g * 2)) dig_g dig_l dig_r color
+}
+
+to rvt {
+  '[tft:roundedRect]' ((x + dig_l) + dig_g) (y + dig_g) dig_g dig_l dig_r color
+}
+
+to space {
+  x += (2 * (dig_l + dig_g))
+}
+script 65 50 {
+comment 'This library allows you to display numbers in a big digital styled font.
+
+It uses the TFT library and the "draw round rectangle on TFT at ..." function
+
+to display rounded rectangles which form the individual stroke of a digit.
+
+The digits are then built by displaying these individual strokes.
+
+Finally some fine-tuning of the way the digits are displayed is available.'
+}
+
+script 70 247 {
+whenStarted
+x = 0
+y = 0
+comment 'The Digits library uses the x and y variables
+
+to place the digits on the screen.'
+}
+
+script 69 420 {
+initDigits 20 4 2
+comment 'Controls the size of the individual strokes of a single digit:
+
+length, width, round
+
+For rounded strokes the round-value should be half
+
+of the width value.'
+}
+
+script 74 592 {
+displayDigits 10 5
+comment 'Displays a number on the screen:
+
+number, length
+
+The length parameter allows different numbers to
+
+be justified to the right.'
+}
+
+script 77 769 {
+comment 'Demonstration of the Digits library.'
+color = (colorSwatch 255 255 30 255)
+initDigits 20 4 0
+for i 99 {
+  '[display:mbDisplayOff]'
+  '[tft:text]' 'CO2' 0 0 color
+  '[tft:text]' 'ppm' 0 l color
+  x = 0
+  displayDigits (100 * i) 5
+  waitMillis 50
+}
+}
+
+script 75 1082 {
+comment 'Definition of individual strokes'
+}
+
+script 922 1129 {
+to h3 {}
+}
+
+script 76 1137 {
+to h1 {}
+}
+
+script 452 1137 {
+to h2 {}
+}
+
+script 461 1311 {
+to rvt {}
+}
+
+script 79 1312 {
+to lvt {}
+}
+
+script 85 1488 {
+to lvd {}
+}
+
+script 567 1489 {
+to rvd {}
+}
+
+script 83 1675 {
+comment 'Definition of digits 0-9 and space between digits'
+}
+
+script 83 1747 {
+to '0' {}
+}
+
+script 233 1749 {
+to '1' {}
+}
+
+script 538 1749 {
+to '3' {}
+}
+
+script 382 1750 {
+to '2' {}
+}
+
+script 691 1750 {
+to '4' {}
+}
+
+script 844 1752 {
+to '5' {}
+}
+
+script 998 1752 {
+to '6' {}
+}
+
+script 80 1981 {
+to '7' {}
+}
+
+script 247 1982 {
+to '8' {}
+}
+
+script 406 1982 {
+to '9' {}
+}
+
+script 571 1984 {
+to space {}
+}
+
+script 58 2268 {
+comment 'Blocks to initialize and display numbers in big digits.'
+}
+
+script 61 2323 {
+to initDigits {}
+}
+
+script 65 2496 {
+to fillDigits {}
+}
+
+script 63 2820 {
+to displayDigits {}
+}
+
+
+module Strings Data
+author MicroBlocks
+version 1 4 
+description 'String operations.'
+
+	spec 'r' 'isDigit' '_ is a digit' 'str' '5'
+	spec 'r' 'isLowercase' '_ is lowercase' 'str' 'A'
+	spec 'r' 'isUppercase' '_ is uppercase' 'str' 'E'
+	spec 'r' 'beginsWith' '_ begins with _' 'str str' 'prefix' 'pre'
+	spec 'r' 'endsWith' '_ ends with _' 'str str' 'suffix' 'fix'
+	spec 'r' 'contains' '_ contains _' 'str str' 'smiles' 'mile'
+	spec 'r' 'lowercase' 'lowercase _' 'str' 'THIS is a String! :)'
+	spec 'r' 'uppercase' 'uppercase _' 'str' 'Hello, world!'
+	spec 'r' 'withoutWhiteSpace' '_ without white space' 'str' '1, 2,	3,
+4'
+	spec 'r' 'joinWith' 'join string list _ separator _' 'auto str' ' ' ' '
+
+to beginsWith string substring {
+  return (('[data:find]' substring string) == 1)
+}
+
+to contains string substring {
+  return (('[data:find]' substring string) > 0)
+}
+
+to endsWith string substring {
+  return (('[data:find]' substring string) > ((size string) - (size substring)))
+}
+
+to isDigit char {
+  local 'unicode' ('[data:unicodeAt]' 1 char)
+  return (and (unicode >= 48) (unicode <= 57))
+}
+
+to isLowercase char {
+  local 'unicode' ('[data:unicodeAt]' 1 char)
+  return (and (unicode >= 97) (unicode <= 122))
+}
+
+to isUppercase char {
+  local 'unicode' ('[data:unicodeAt]' 1 char)
+  return (and (unicode >= 65) (unicode <= 90))
+}
+
+to joinWith stringList separator {
+  if (not (isType stringList 'list')) {return ('[data:join]' '' stringList)}
+  if (or ((pushArgCount) == 1) (separator == '')) {return ('[data:joinStrings]' stringList)}
+  local 'result' (newList (2 * (size stringList)))
+  '[data:delete]' 'all' result
+  for s stringList {
+    '[data:addLast]' s result
+    '[data:addLast]' separator result
+  }
+  '[data:delete]' 'last' result
+  return ('[data:joinStrings]' result)
+}
+
+to lowercase string {
+  local 'new string' ''
+  for i (size string) {
+    if (isUppercase (at i string)) {
+      'new string' = ('[data:join]' (v 'new string') ('[data:unicodeString]' (('[data:unicodeAt]' i string) + 32)))
+    } else {
+      'new string' = ('[data:join]' (v 'new string') (at i string))
+    }
+  }
+  return (v 'new string')
+}
+
+to uppercase string {
+  local 'new string' ''
+  for i (size string) {
+    if (isLowercase (at i string)) {
+      'new string' = ('[data:join]' (v 'new string') ('[data:unicodeString]' (('[data:unicodeAt]' i string) - 32)))
+    } else {
+      'new string' = ('[data:join]' (v 'new string') (at i string))
+    }
+  }
+  return (v 'new string')
+}
+
+to withoutWhiteSpace aString {
+  local 'result' (newList (size aString))
+  '[data:delete]' 'all' result
+  for i (size aString) {
+    local 'ch' ('[data:unicodeAt]' i aString)
+    if (ch > 32) {
+      '[data:addLast]' ch result
+    }
+  }
+  return ('[data:unicodeString]' result)
+}
+
+
+module TFT Output
+author MicroBlocks
+version 1 2 
+tags tft graphics draw 
+description 'Draw graphics and write text on boards with a TFT display, such as the M5Stack, M5Stick, Citilab ED1 or (discontinued) IoT-Bus.'
+
+	spec ' ' '[display:mbDisplayOff]' 'clear display'
+	spec ' ' '[tft:rect]' 'draw rectangle on TFT at x _ y _ width _ height _ color _ : filled _' 'num num num num num bool' 10 10 40 30 65280 false
+	spec ' ' '[tft:roundedRect]' 'draw rounded rectangle on TFT at x _ y _ width _ height _ radius _ color _ : filled _' 'num num num num num num bool' 10 10 40 30 8 12255317 false
+	spec ' ' '[tft:circle]' 'draw circle on TFT at x _ y _ radius _ color _ : filled _' 'num num num num bool' 60 100 30 65535 false
+	spec ' ' '[tft:triangle]' 'draw triangle on TFT at x _ y _ , x _ y _ , x _ y _ color _ : filled _' 'num num num num num num num bool' 20 20 30 80 60 5 5592354 false
+	spec ' ' '[tft:text]' 'write _ on TFT at x _ y _ color _ : scale _ wrap _' 'str num num num num bool' 'Hello World!' 0 80 16777215 1 false
+	spec ' ' '[tft:line]' 'draw line on TFT from x _ y _ to x _ y _ color _' 'num num num num num' 12 8 25 15 255
+	spec ' ' '[tft:setPixel]' 'set TFT pixel x _ y _ to _' 'num num num' 50 32 16711680
+	spec 'r' 'makeColor' 'color r _ g _ b _ (0-255)' 'auto auto auto' 0 100 100
+	spec 'r' 'randomColor' 'random color'
+	spec 'r' '[tft:getWidth]' 'TFT width'
+	spec 'r' '[tft:getHeight]' 'TFT height'
+	spec ' ' '[tft:enableDisplay]' 'enable TFT _' 'bool' true
+	spec ' ' '[tft:setBacklight]' 'set TFT backlight _ (0-10)' 'num' 10
+
+to makeColor r g b {
+  r = (maximum 0 (minimum r 255))
+  g = (maximum 0 (minimum g 255))
+  b = (maximum 0 (minimum b 255))
+  return ((r << 16) | ((g << 8) | b))
+}
+
+to randomColor {
+  local 'n1' (random 100 200)
+  local 'n2' (random 0 100)
+  if (1 == (random 1 3)) {
+    return ((n1 << 16) | (n2 << 8))
+  } (1 == (random 1 2)) {
+    return ((n2 << 16) | n1)
+  } else {
+    return ((n1 << 8) | n2)
+  }
+}
+

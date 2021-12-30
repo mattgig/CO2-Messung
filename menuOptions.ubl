@@ -1,0 +1,51 @@
+module menuOptions
+author 'Matthias Giger'
+version 1 0 
+depends TFT 
+description 'used to simplify menues in CO2 sensor programme
+'
+variables menuy menux menuList 
+
+	spec ' ' 'displayOptions' 'displayOptions _' 'str' ''
+	spec 'r' 'getOption' 'getOption _' 'auto' '10'
+	spec ' ' 'advanceMenu' 'advanceMenu _' 'auto' '10'
+	spec 'r' 'menuyToGraph' 'menuyToGraph _ _ _' 'auto auto auto' '10' '10' '10'
+	spec 'r' 'stringToList' 'stringToList _' 'auto' '10'
+
+to advanceMenu menuItems {
+  '[tft:rect]' 0 (menuyToGraph menuy 30 5) 30 5 (colorSwatch 0 0 0 255)
+  menuy += 1
+  '[tft:rect]' 0 (menuyToGraph menuy 30 5) 30 5 (colorSwatch 35 190 30 255)
+  if (menuy >= (size (stringToList menuItems))) {
+    sendBroadcast 'Main Menu'
+  }
+}
+
+to displayOptions optionString {
+  menuy = 1
+  '[display:mbDisplayOff]'
+  '[tft:rect]' 0 (menuyToGraph 1 30 5) 30 5 (colorSwatch 35 190 30 255)
+  local 'optionList' ('[data:split]' optionString ';')
+  for i (size optionList) {
+    if (i == 1) {
+      menux = 0
+    } else {
+      menux = 40
+    }
+    '[tft:text]' (at i optionList) menux ((i - 1) * 30) (colorSwatch 35 190 30 255)
+  }
+}
+
+to getOption optionString {
+  local 'optionList' ('[data:split]' optionString ';')
+  return (at (menuy + 1) optionList)
+}
+
+to menuyToGraph number multiplier offset {
+  return ((number * multiplier) + offset)
+}
+
+to stringToList string {
+  return ('[data:split]' string ';')
+}
+
